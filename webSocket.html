@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>WebSocket Test</title>
+        <script language="javascript" type="text/javascript">
+            var output;
+            
+            function init()
+            {
+                output = document.getElementById("output");
+            }
+            
+            function openWebSocket()
+            {
+                websocket = new WebSocket(document.getElementById("Server").value);
+                websocket.onopen = function(evt) { onOpen(evt) };
+                websocket.onclose = function(evt) { onClose(evt) };
+                websocket.onmessage = function(evt) { onMessage(evt) };
+                websocket.onerror = function(evt) { onError(evt) };
+            }
+            
+            function closeWebSocket()
+            {
+                websocket.close();
+            }
+            
+            function onOpen(evt)
+            {
+                writeToScreen("CONNECTED");
+            }
+            
+            function onClose(evt)
+            {
+                writeToScreen("DISCONNECTED");
+            }
+            
+            function onMessage(evt)
+            {
+                writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+            }
+            
+            function onError(evt)
+            {
+                writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+            }
+            
+            function doSend(message)
+            {
+                writeToScreen("SENT: " + message);
+                websocket.send(message);
+            }
+            
+            function writeToScreen(message)
+            {
+                var pre = document.createElement("p");
+                pre.style.wordWrap = "break-word";
+                pre.innerHTML = message;
+                output.appendChild(pre);
+            }
+            
+            window.addEventListener("load", init, false);
+        </script>
+    </head>
+    <body>
+        <h2>WebSocket Test</h2>
+        <table>
+            <tr>
+                <td>Servername</td>
+                <td><input type="text" id="Server" value="ws://localhost:5000/"></td>
+            </tr>
+            <tr>
+                <td>Text</td>
+                <td><input type="text" id="Input"></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="button" onclick="doSend(document.getElementById('Input').value)" value="Send"></td>
+            </tr>
+            <tr>
+                <td><input type="button" onclick="openWebSocket()" value="Connect"></td>
+                <td><input type="button" onclick="closeWebSocket()" value="Disconnect"></td>
+            </tr>
+        </table>
+        <div id="output"><h3>Output:</h3><br></div>
+    </body>
+</html>
